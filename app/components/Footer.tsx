@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
+import { useAudio } from "./AudioContext";
 
 export default function Footer() {
-  const [isPlaying, setIsPlaying] = useState(true);
+  const { isPlayingCassette: isPlaying, toggleCassette: setIsPlaying } = useAudio();
 
   // Array of 14 wave bar classnames for the audio waveform visualizer player
   const waveBars = [
@@ -45,7 +46,7 @@ export default function Footer() {
             {/* Cassette Graphic - Balanced top offset */}
             <div
               className="relative cursor-pointer transition-transform hover:scale-105 active:scale-95 -mt-9 md:-mt-11"
-              onClick={() => setIsPlaying(!isPlaying)}
+              onClick={setIsPlaying}
               title={isPlaying ? "Click to Pause Cassette" : "Click to Play Cassette"}
             >
               <div className="relative w-[130px] h-[82px] md:w-[155px] md:h-[96px]">
@@ -63,7 +64,7 @@ export default function Footer() {
             <div className="flex items-center gap-0.5 pt-0.5">
               <div
                 className="flex items-end gap-[1.5px] h-3.5 cursor-pointer"
-                onClick={() => setIsPlaying(!isPlaying)}
+                onClick={setIsPlaying}
                 title={isPlaying ? "Click to Pause" : "Click to Play"}
               >
                 {waveBars.map((barClass, idx) => (
@@ -143,13 +144,13 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Social Icons */}
-          <div className="flex items-center gap-2 text-[#8f96b3] pl-1">
+          {/* Social Icons (Clean raw icons without background box) */}
+          <div className="flex items-center gap-2.5 text-[#8f96b3] pl-1">
             <a
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 hover:text-white hover:bg-[#1a1b2e] rounded transition-colors group"
+              className="p-0.5 hover:text-white transition-colors group"
               aria-label="GitHub"
             >
               <svg className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
@@ -161,7 +162,7 @@ export default function Footer() {
               href="https://linkedin.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 hover:text-white hover:bg-[#1a1b2e] rounded transition-colors group"
+              className="p-0.5 hover:text-white transition-colors group"
               aria-label="LinkedIn"
             >
               <svg className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
@@ -171,7 +172,7 @@ export default function Footer() {
 
             <a
               href="mailto:contact@example.com"
-              className="p-1 hover:text-white hover:bg-[#1a1b2e] rounded transition-colors group"
+              className="p-0.5 hover:text-white transition-colors group"
               aria-label="Email"
             >
               <svg className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
