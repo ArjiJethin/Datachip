@@ -8,7 +8,7 @@ export default function EridianClock() {
       className="absolute z-11 pointer-events-none select-none flex items-end justify-center"
       style={{
         left: "27.5%",
-        top: "66.5  %",
+        top: "66.5%",
         height: "clamp(65px, 9.4vh, 98px)",
       }}
     >
