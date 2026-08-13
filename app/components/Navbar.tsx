@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useAudio } from "./AudioContext";
 
 export default function Navbar() {
-  const [activeTab, setActiveTab] = useState("HOME");
+  const { activeTab, setActiveTab } = useAudio();
 
   const navItems = [
     { name: "HOME", href: "#home" },
@@ -73,27 +74,36 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Settings Cogwheel Icon (Matching user's reference image: 8-tooth dual-tone gear) */}
+      {/* Settings Cogwheel Icon with Transparent Center Hole */}
       <button
         aria-label="Settings"
         className="group cursor-pointer shrink-0 p-1"
       >
         <svg
-          className="w-6 h-6 md:w-7 md:h-7 transition-transform duration-300 group-hover:rotate-90 drop-shadow-md"
+          className="w-6 h-6 md:w-7 md:h-7 transition-transform duration-300 group-hover:rotate-90 drop-shadow-md overflow-visible"
           viewBox="0 0 100 100"
         >
-          {/* 8-Tooth Outer Gear Body */}
+          <defs>
+            <mask id="cog-center-hole-mask">
+              <rect x="-20" y="-20" width="140" height="140" fill="white" />
+              <circle cx="50" cy="55" r="19" fill="black" />
+            </mask>
+          </defs>
+
+          {/* 8-Tooth Outer Gear Body masked with transparent center */}
           <path
             d="M 43 8 L 57 8 L 60 21 C 65.5 23.2 70.5 26.5 74.8 30.8 L 87 25 L 95 38 L 84 46.5 C 85.5 52 85.5 58 84 63.5 L 95 72 L 87 85 L 74.8 79.2 C 70.5 83.5 65.5 86.8 60 89 L 57 102 L 43 102 L 40 89 C 34.5 86.8 29.5 83.5 25.2 79.2 L 13 85 L 5 72 L 16 63.5 C 14.5 58 14.5 52 16 46.5 L 5 38 L 13 25 L 25.2 30.8 C 29.5 26.5 34.5 23.2 40 21 Z"
             className="fill-[#94a3b8] group-hover:fill-white stroke-[#1e293b] stroke-[5] transition-colors"
             strokeLinejoin="round"
+            mask="url(#cog-center-hole-mask)"
           />
-          {/* Inner Center Circle Cutout */}
+          {/* Inner stroke around the transparent hole */}
           <circle
             cx="50"
             cy="55"
             r="19"
-            className="fill-[#080913] stroke-[#1e293b] stroke-[5]"
+            fill="none"
+            className="stroke-[#1e293b] stroke-[5]"
           />
         </svg>
       </button>

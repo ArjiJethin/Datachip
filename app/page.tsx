@@ -4,6 +4,7 @@ import RainAndClouds from "./components/RainAndClouds";
 import Navbar from "./components/Navbar";
 import PhotoFrame from "./components/PhotoFrame";
 import BackgroundSkyline from "./components/BackgroundSkyline";
+import Avatar from "./components/Avatar";
 import { AudioProvider } from "./components/AudioContext";
 
 export default function Home() {
@@ -33,7 +34,10 @@ export default function Home() {
           />
         </div>
 
-        {/* Interactive Hanging Photo Frame (FotoFrame1) with mouse-swaying chains */}
+        {/* Avatar Sitting at Desk */}
+        <Avatar />
+
+        {/* Interactive Hanging Photo Frames */}
         <PhotoFrame />
 
         {/* Pixel Art Footer Bar */}

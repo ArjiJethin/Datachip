@@ -15,6 +15,8 @@ interface AudioContextType {
   startAudio: () => void;
   isMuted: boolean;
   toggleMute: () => void;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
 }
 
 const AudioContext = createContext<AudioContextType>({
@@ -24,6 +26,8 @@ const AudioContext = createContext<AudioContextType>({
   startAudio: () => { },
   isMuted: false,
   toggleMute: () => { },
+  activeTab: "HOME",
+  setActiveTab: () => { },
 });
 
 export const useAudio = () => useContext(AudioContext);
@@ -36,6 +40,7 @@ export function AudioProvider({
   const [isPlayingCassette, setIsPlayingCassette] = useState(false);
   const [isAudioStarted, setIsAudioStarted] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [activeTab, setActiveTab] = useState("HOME");
 
   const thunderAudioRef = useRef<HTMLAudioElement | null>(null);
   const cassetteAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -452,6 +457,8 @@ export function AudioProvider({
         startAudio,
         isMuted,
         toggleMute,
+        activeTab,
+        setActiveTab,
       }}
     >
       {children}
