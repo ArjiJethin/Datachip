@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Silkscreen, Pixelify_Sans } from "next/font/google";
+import DisableZoom from "./components/DisableZoom";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,6 +29,13 @@ export const metadata: Metadata = {
   description: "Interactive 2D Pixel-Art Game Portfolio",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full w-full bg-[#0b0c10]">
       <body className={`${geistSans.variable} ${geistMono.variable} ${silkscreen.variable} ${pixelify.variable} h-full w-full bg-[#0b0c10] overflow-hidden antialiased`}>
+        <DisableZoom />
         {children}
       </body>
     </html>

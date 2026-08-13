@@ -8,7 +8,7 @@ interface FrameConfig {
   alt: string;
   left: string;
   top: string;
-  chainHeight: number;
+  chainHeightPct: number; // percentage of viewport height or scalable base
   leftHookPct: number;
   rightHookPct: number;
 }
@@ -20,7 +20,7 @@ const FRAMES: FrameConfig[] = [
     alt: "01 Skill Tree Photo Frame",
     left: "5.5%",
     top: "0px",
-    chainHeight: 46,
+    chainHeightPct: 4.8,
     leftHookPct: 17.0,
     rightHookPct: 82.6,
   },
@@ -30,7 +30,7 @@ const FRAMES: FrameConfig[] = [
     alt: "02 Journey Log Photo Frame",
     left: "22.5%",
     top: "28.7%",
-    chainHeight: 42,
+    chainHeightPct: 4.4,
     leftHookPct: 18.5,
     rightHookPct: 81.5,
   },
@@ -40,7 +40,7 @@ const FRAMES: FrameConfig[] = [
     alt: "03 Side Quests Photo Frame",
     left: "5.5%",
     top: "45.7%",
-    chainHeight: 42,
+    chainHeightPct: 4.4,
     leftHookPct: 18.5,
     rightHookPct: 81.5,
   },
@@ -112,12 +112,12 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
   };
 
   const renderChain = (hookPct: number) => {
-    const chainHeight = config.chainHeight;
+    const chainHeight = 46;
     const chainWidth = 16;
 
     const topX = chainWidth / 2;
     const topY = 0;
-
+    
     // Bottom hook point moves with frame sway
     const botX = chainWidth / 2 + motion.angle * 0.9;
     const botY = chainHeight;
@@ -147,13 +147,14 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
         style={{
           left: `${hookPct}%`,
           transform: "translateX(-50%)",
-          width: `${chainWidth}px`,
-          height: `${chainHeight}px`,
+          width: "clamp(12px, 1.1vw, 18px)",
+          height: "100%",
         }}
       >
         <svg
           className="w-full h-full overflow-visible"
           viewBox={`0 0 ${chainWidth} ${chainHeight}`}
+          preserveAspectRatio="none"
         >
           <path
             d={`M ${topX} ${topY} Q ${midX} ${midY} ${botX} ${botY}`}
@@ -230,13 +231,14 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
       style={{
         left: config.left,
         top: config.top,
-        width: "11.5vw",
-        maxWidth: "195px",
-        minWidth: "135px",
+        width: "clamp(135px, 11.8vw, 220px)",
       }}
     >
-      {/* Chains container */}
-      <div className="w-full relative" style={{ height: `${config.chainHeight}px` }}>
+      {/* Chains container scaling dynamically with viewport height */}
+      <div
+        className="w-full relative"
+        style={{ height: `clamp(30px, ${config.chainHeightPct}vh, 52px)` }}
+      >
         {renderChain(config.leftHookPct)}
         {renderChain(config.rightHookPct)}
       </div>
@@ -249,7 +251,7 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
         className="relative w-full cursor-pointer transition-transform duration-75 ease-out"
         style={{
           transform: `rotate(${motion.angle}deg)`,
-          transformOrigin: `50% -${config.chainHeight}px`,
+          transformOrigin: "50% -40px",
         }}
       >
         <img

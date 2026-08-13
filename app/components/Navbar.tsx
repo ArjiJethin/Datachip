@@ -15,7 +15,7 @@ export default function Navbar() {
   return (
     <div className="fixed -top-3 md:-top-4 right-4 md:right-8 z-30 select-none flex items-center gap-3">
       {/* StatBoard Frame Container */}
-      <div className="relative w-[360px] md:w-[420px] shrink-0">
+      <div className="relative w-[clamp(280px,26vw,420px)] shrink-0">
         {/* Pixel Art Frame Graphic */}
         <img
           src="/assets/StatBoard.png"
