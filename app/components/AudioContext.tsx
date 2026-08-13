@@ -69,17 +69,11 @@ export function AudioProvider({
   const playChainRattle = () => {
     if (isMuted) return;
     try {
-      const now = Date.now();
-      if (now - lastChainRattleTimeRef.current < 450) {
-        return;
-      }
-      lastChainRattleTimeRef.current = now;
-
       if (!chainRattleAudioRef.current) {
         chainRattleAudioRef.current = new Audio("/assets/Music/ChainRattle.m4a");
-        // Toned down by 25% (volume = 0.75)
-        chainRattleAudioRef.current.volume = 0.75;
       }
+      // Toned down by 35% (volume = 0.65)
+      chainRattleAudioRef.current.volume = 0.65;
       chainRattleAudioRef.current.currentTime = 0;
       chainRattleAudioRef.current.play().catch(() => {});
     } catch (e) {

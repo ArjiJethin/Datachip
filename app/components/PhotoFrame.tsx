@@ -52,6 +52,7 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
   const frameRef = useRef<HTMLDivElement>(null);
   const isHoveringRef = useRef<boolean>(false);
   const lastMouseXRef = useRef<number | null>(null);
+  const hasRattledForCurrentSwipeRef = useRef<boolean>(false);
 
   // Physics refs for independent frame swaying
   const angleRef = useRef<number>(0);
@@ -98,18 +99,20 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isHoveringRef.current) {
-      playChainRattle();
-    }
-    isHoveringRef.current = true;
     if (lastMouseXRef.current !== null) {
       const deltaX = e.clientX - lastMouseXRef.current;
-      if (Math.abs(deltaX) > 1.5) {
+
+      // Play chain rattle ONCE when cursor is moved across the frame significantly
+      if (!hasRattledForCurrentSwipeRef.current && Math.abs(deltaX) > 3.0) {
+        hasRattledForCurrentSwipeRef.current = true;
         playChainRattle();
       }
+
       const push = Math.max(-3.5, Math.min(3.5, deltaX * 0.22));
       targetAngleRef.current = push;
     }
+
+    isHoveringRef.current = true;
     lastMouseXRef.current = e.clientX;
   };
 
@@ -117,6 +120,7 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
     isHoveringRef.current = false;
     lastMouseXRef.current = null;
     targetAngleRef.current = 0;
+    hasRattledForCurrentSwipeRef.current = false;
   };
 
   const renderChain = (hookPct: number) => {

@@ -1,10 +1,53 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useAudio } from "./AudioContext";
+
+interface LightningEvent {
+  thunderTimeSec: number;
+  lightningTimeSec: number;
+  intensity: 1 | 2 | 3;
+}
+
+// 27 Thunder events from storm audio (600.4s loop) with pre-thunder lightning delays (1.0s - 1.8s)
+const LIGHTNING_TIMELINE: LightningEvent[] = [
+  { thunderTimeSec: 38.18, lightningTimeSec: 36.78, intensity: 3 },
+  { thunderTimeSec: 51.60, lightningTimeSec: 50.40, intensity: 2 },
+  { thunderTimeSec: 68.46, lightningTimeSec: 66.86, intensity: 3 },
+  { thunderTimeSec: 80.93, lightningTimeSec: 79.63, intensity: 3 },
+  { thunderTimeSec: 125.70, lightningTimeSec: 124.20, intensity: 1 },
+  { thunderTimeSec: 140.80, lightningTimeSec: 139.70, intensity: 2 },
+  { thunderTimeSec: 167.64, lightningTimeSec: 165.94, intensity: 1 },
+  { thunderTimeSec: 196.97, lightningTimeSec: 195.72, intensity: 3 },
+  { thunderTimeSec: 208.95, lightningTimeSec: 207.50, intensity: 3 },
+  { thunderTimeSec: 219.20, lightningTimeSec: 218.05, intensity: 2 },
+  { thunderTimeSec: 241.63, lightningTimeSec: 239.98, intensity: 1 },
+  { thunderTimeSec: 249.95, lightningTimeSec: 248.60, intensity: 3 },
+  { thunderTimeSec: 265.23, lightningTimeSec: 263.68, intensity: 3 },
+  { thunderTimeSec: 318.06, lightningTimeSec: 316.86, intensity: 2 },
+  { thunderTimeSec: 340.46, lightningTimeSec: 338.71, intensity: 1 },
+  { thunderTimeSec: 383.18, lightningTimeSec: 381.78, intensity: 3 },
+  { thunderTimeSec: 396.60, lightningTimeSec: 395.50, intensity: 2 },
+  { thunderTimeSec: 413.46, lightningTimeSec: 411.86, intensity: 1 },
+  { thunderTimeSec: 425.93, lightningTimeSec: 424.63, intensity: 3 },
+  { thunderTimeSec: 470.71, lightningTimeSec: 469.21, intensity: 3 },
+  { thunderTimeSec: 485.80, lightningTimeSec: 484.55, intensity: 2 },
+  { thunderTimeSec: 512.63, lightningTimeSec: 511.18, intensity: 3 },
+  { thunderTimeSec: 529.75, lightningTimeSec: 528.60, intensity: 1 },
+  { thunderTimeSec: 541.97, lightningTimeSec: 540.32, intensity: 3 },
+  { thunderTimeSec: 553.95, lightningTimeSec: 552.60, intensity: 3 },
+  { thunderTimeSec: 564.20, lightningTimeSec: 563.10, intensity: 2 },
+  { thunderTimeSec: 586.75, lightningTimeSec: 585.25, intensity: 3 },
+];
 
 export default function RainAndClouds() {
+  const { isAudioStarted } = useAudio();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isFlashing, setIsFlashing] = useState(false);
+  const [flashOpacity, setFlashOpacity] = useState<number>(0.2);
+
+  // Trigger lightning function ref so timeline interval can invoke it safely
+  const triggerLightningRef = useRef<((intensity: 1 | 2 | 3) => void) | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -53,28 +96,33 @@ export default function RainAndClouds() {
     let activeBolt: Array<{ x: number; y: number }> | null = null;
     let activeBranch: Array<{ x: number; y: number }> | null = null;
     let boltTimer = 0;
-    let timerId: NodeJS.Timeout;
 
-    // Trigger lightning roughly every 15 seconds (12s - 18s interval)
-    const scheduleNextLightning = () => {
-      const delay = Math.random() * 6000 + 12000;
-      return setTimeout(() => {
-        triggerLightning();
-        timerId = scheduleNextLightning();
-      }, delay);
-    };
+    // Trigger lightning with 3 intensity levels
+    const triggerLightning = (intensity: 1 | 2 | 3 = 2) => {
+      // Intensity 1 = subtle flash, no main canvas bolt
+      if (intensity === 1) {
+        setFlashOpacity(0.18);
+        setIsFlashing(true);
+        setTimeout(() => setIsFlashing(false), 140);
+        activeBolt = null;
+        activeBranch = null;
+        return;
+      }
 
-    const triggerLightning = () => {
-      // Trigger sky flash overlay
+      // Intensity 2 (normal) & Intensity 3 (strong)
+      const flashPeak = intensity === 3 ? 0.5 : 0.25;
+      const flashDuration = intensity === 3 ? 320 : 250;
+
+      setFlashOpacity(flashPeak);
       setIsFlashing(true);
-      setTimeout(() => setIsFlashing(false), 250);
+      setTimeout(() => setIsFlashing(false), flashDuration);
 
-      // Generate lightning bolt coordinates inside the window area (middle sky)
+      // Generate lightning bolt coordinates inside window area (middle sky)
       const startX = width * (Math.random() * 0.25 + 0.45); // Window sky bounds
       const startY = height * 0.05;
       const endY = height * 0.52;
 
-      const segments = 6;
+      const segments = intensity === 3 ? 8 : 6;
       const mainPoints = [{ x: startX, y: startY }];
       let currentX = startX;
       let currentY = startY;
@@ -82,7 +130,7 @@ export default function RainAndClouds() {
 
       for (let i = 0; i < segments; i++) {
         currentY += segH;
-        currentX += (Math.random() - 0.5) * 45;
+        currentX += (Math.random() - 0.5) * (intensity === 3 ? 55 : 45);
         mainPoints.push({ x: currentX, y: currentY });
       }
 
@@ -98,10 +146,10 @@ export default function RainAndClouds() {
         ];
       }
 
-      boltTimer = 16;
+      boltTimer = intensity === 3 ? 24 : 16;
     };
 
-    timerId = scheduleNextLightning();
+    triggerLightningRef.current = triggerLightning;
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
@@ -168,17 +216,59 @@ export default function RainAndClouds() {
     return () => {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationFrameId);
-      clearTimeout(timerId);
+      triggerLightningRef.current = null;
     };
   }, []);
+
+  // Soundtrack-Synchronized Lightning Timeline Scheduler
+  useEffect(() => {
+    if (!isAudioStarted) {
+      return;
+    }
+
+    const startTime = Date.now();
+    const LOOP_DURATION_MS = 600400; // 600.4s storm audio track length
+
+    let lastFiredLoopIndex = -1;
+    const firedEvents = new Set<number>();
+
+    const checkTimeline = () => {
+      const elapsedTotal = Date.now() - startTime;
+      const currentLoopIndex = Math.floor(elapsedTotal / LOOP_DURATION_MS);
+      const loopTimeSec = (elapsedTotal % LOOP_DURATION_MS) / 1000;
+
+      // Reset fired events set when audio loop restarts
+      if (currentLoopIndex !== lastFiredLoopIndex) {
+        lastFiredLoopIndex = currentLoopIndex;
+        firedEvents.clear();
+      }
+
+      // Check each scheduled lightning event in the timeline
+      LIGHTNING_TIMELINE.forEach((event, idx) => {
+        if (!firedEvents.has(idx) && loopTimeSec >= event.lightningTimeSec) {
+          if (loopTimeSec - event.lightningTimeSec < 1.5) {
+            triggerLightningRef.current?.(event.intensity);
+          }
+          firedEvents.add(idx);
+        }
+      });
+    };
+
+    const intervalId = setInterval(checkTimeline, 100);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isAudioStarted]);
 
   return (
     <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden select-none">
       {/* Lightning Flash Overlay (Flashes light over the window skyline) */}
       <div
-        className={`absolute inset-0 z-20 bg-white/20 transition-opacity duration-150 ${
-          isFlashing ? "opacity-100" : "opacity-0"
-        }`}
+        className="absolute inset-0 z-20 bg-white transition-opacity duration-150"
+        style={{
+          opacity: isFlashing ? flashOpacity : 0,
+        }}
       />
 
       {/* Slow Moving Storm Clouds Layer */}
