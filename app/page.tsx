@@ -2,6 +2,8 @@ import Image from "next/image";
 import Footer from "./components/Footer";
 import RainAndClouds from "./components/RainAndClouds";
 import Navbar from "./components/Navbar";
+import PhotoFrame from "./components/PhotoFrame";
+import BackgroundSkyline from "./components/BackgroundSkyline";
 import { AudioProvider } from "./components/AudioContext";
 
 export default function Home() {
@@ -11,19 +13,8 @@ export default function Home() {
         {/* Top-Right Pixel Art Navigation Panel */}
         <Navbar />
 
-        {/* Layer 2: Background City Skyline View */}
-        <div className="absolute inset-0 z-0 w-full h-full">
-          <Image
-            src="/assets/Layer2.webp?v=2"
-            alt="City night skyline background"
-            fill
-            priority
-            unoptimized
-            quality={100}
-            sizes="100vw"
-            className="object-cover object-center pointer-events-none pixelated"
-          />
-        </div>
+        {/* Layer 2: Parallax Background City Skyline View */}
+        <BackgroundSkyline />
 
         {/* Layer 1.5: Weather Effect Layer (Rain + Slow-Moving Clouds) */}
         <RainAndClouds />
@@ -41,6 +32,9 @@ export default function Home() {
             className="object-cover object-center pointer-events-none pixelated"
           />
         </div>
+
+        {/* Interactive Hanging Photo Frame (FotoFrame1) with mouse-swaying chains */}
+        <PhotoFrame />
 
         {/* Pixel Art Footer Bar */}
         <Footer />

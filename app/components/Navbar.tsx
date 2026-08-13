@@ -73,13 +73,28 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Settings Cogwheel Icon (Standalone gray icon without box background) */}
+      {/* Settings Cogwheel Icon (Matching user's reference image: 8-tooth dual-tone gear) */}
       <button
         aria-label="Settings"
-        className="text-[#8f96b3] hover:text-white transition-all duration-300 cursor-pointer shrink-0 hover:rotate-90 p-1"
+        className="group cursor-pointer shrink-0 p-1"
       >
-        <svg className="w-5 h-5 md:w-6 md:h-6 fill-current drop-shadow-md" viewBox="0 0 24 24">
-          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6-3.6z" />
+        <svg
+          className="w-6 h-6 md:w-7 md:h-7 transition-transform duration-300 group-hover:rotate-90 drop-shadow-md"
+          viewBox="0 0 100 100"
+        >
+          {/* 8-Tooth Outer Gear Body */}
+          <path
+            d="M 43 8 L 57 8 L 60 21 C 65.5 23.2 70.5 26.5 74.8 30.8 L 87 25 L 95 38 L 84 46.5 C 85.5 52 85.5 58 84 63.5 L 95 72 L 87 85 L 74.8 79.2 C 70.5 83.5 65.5 86.8 60 89 L 57 102 L 43 102 L 40 89 C 34.5 86.8 29.5 83.5 25.2 79.2 L 13 85 L 5 72 L 16 63.5 C 14.5 58 14.5 52 16 46.5 L 5 38 L 13 25 L 25.2 30.8 C 29.5 26.5 34.5 23.2 40 21 Z"
+            className="fill-[#94a3b8] group-hover:fill-white stroke-[#1e293b] stroke-[5] transition-colors"
+            strokeLinejoin="round"
+          />
+          {/* Inner Center Circle Cutout */}
+          <circle
+            cx="50"
+            cy="55"
+            r="19"
+            className="fill-[#080913] stroke-[#1e293b] stroke-[5]"
+          />
         </svg>
       </button>
     </div>
