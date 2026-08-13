@@ -5,6 +5,8 @@ import Navbar from "./components/Navbar";
 import PhotoFrame from "./components/PhotoFrame";
 import BackgroundSkyline from "./components/BackgroundSkyline";
 import Avatar from "./components/Avatar";
+import EridianClock from "./components/EridianClock";
+import JWST from "./components/JWST";
 import { AudioProvider } from "./components/AudioContext";
 
 export default function Home() {
@@ -33,6 +35,12 @@ export default function Home() {
             className="object-cover object-center pointer-events-none pixelated"
           />
         </div>
+
+        {/* Eridian Clock Standing on Bookshelf Shelf */}
+        <EridianClock />
+
+        {/* James Webb Space Telescope Model on Upper Bookshelf Shelf */}
+        <JWST />
 
         {/* Avatar Sitting at Desk */}
         <Avatar />

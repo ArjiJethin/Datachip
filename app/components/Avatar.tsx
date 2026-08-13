@@ -46,7 +46,7 @@ export default function Avatar() {
           onClick={() => handleNavigate("ABOUT", "#about")}
           onMouseEnter={() => setHoveredTarget("ABOUT")}
           onMouseLeave={() => setHoveredTarget(null)}
-          className="absolute left-0 top-0 w-[49%] h-full cursor-pointer rounded-lg group"
+          className="absolute left-6 top-0 w-[49%] h-full cursor-pointer rounded-lg group"
         >
           {/* Dev-only translucent box overlay */}
           {SHOW_HIGHLIGHT_BOXES && (
