@@ -4,7 +4,7 @@ import React from "react";
 import { useAudio } from "./AudioContext";
 
 export default function Navbar() {
-  const { activeTab, setActiveTab } = useAudio();
+  const { activeTab, setActiveTab, playBeep } = useAudio();
 
   const navItems = [
     { name: "HOME", href: "#home" },
@@ -31,10 +31,12 @@ export default function Navbar() {
             return (
               <div key={item.name} className="relative flex flex-col items-center justify-center">
                 <button
-                  onClick={() => setActiveTab(item.name)}
-                  className={`font-['Silkscreen',monospace] text-[10px] md:text-[12px] tracking-wider uppercase transition-colors cursor-pointer ${
-                    isActive ? "text-[#f59e0b] font-bold" : "text-[#8f96b3] hover:text-white"
-                  }`}
+                  onClick={() => {
+                    playBeep();
+                    setActiveTab(item.name);
+                  }}
+                  className={`font-['Silkscreen',monospace] text-[10px] md:text-[12px] tracking-wider uppercase transition-colors cursor-pointer ${isActive ? "text-[#f59e0b] font-bold" : "text-[#8f96b3] hover:text-white"
+                    }`}
                 >
                   {item.name}
                 </button>
@@ -60,7 +62,7 @@ export default function Navbar() {
           {/* Bottom Right LinkedIn Icon */}
           <div className="absolute right-[3%] bottom-[12%] pointer-events-auto">
             <a
-              href="https://linkedin.com"
+              href="https://linkedin.com/in/arjijethin/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#8f96b3] hover:text-white transition-colors block"

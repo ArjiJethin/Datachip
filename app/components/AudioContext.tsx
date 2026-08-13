@@ -17,6 +17,8 @@ interface AudioContextType {
   toggleMute: () => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  playBeep: () => void;
+  playChainRattle: () => void;
 }
 
 const AudioContext = createContext<AudioContextType>({
@@ -28,6 +30,8 @@ const AudioContext = createContext<AudioContextType>({
   toggleMute: () => { },
   activeTab: "HOME",
   setActiveTab: () => { },
+  playBeep: () => { },
+  playChainRattle: () => { },
 });
 
 export const useAudio = () => useContext(AudioContext);
@@ -44,6 +48,44 @@ export function AudioProvider({
 
   const thunderAudioRef = useRef<HTMLAudioElement | null>(null);
   const cassetteAudioRef = useRef<HTMLAudioElement | null>(null);
+  const beepAudioRef = useRef<HTMLAudioElement | null>(null);
+  const chainRattleAudioRef = useRef<HTMLAudioElement | null>(null);
+  const lastChainRattleTimeRef = useRef<number>(0);
+
+  const playBeep = () => {
+    if (isMuted) return;
+    try {
+      if (!beepAudioRef.current) {
+        beepAudioRef.current = new Audio("/assets/Music/Beep.m4a");
+        beepAudioRef.current.volume = 0.45;
+      }
+      beepAudioRef.current.currentTime = 0;
+      beepAudioRef.current.play().catch(() => {});
+    } catch (e) {
+      // Ignore audio restriction if user hasn't interacted
+    }
+  };
+
+  const playChainRattle = () => {
+    if (isMuted) return;
+    try {
+      const now = Date.now();
+      if (now - lastChainRattleTimeRef.current < 450) {
+        return;
+      }
+      lastChainRattleTimeRef.current = now;
+
+      if (!chainRattleAudioRef.current) {
+        chainRattleAudioRef.current = new Audio("/assets/Music/ChainRattle.m4a");
+        // Toned down by 25% (volume = 0.75)
+        chainRattleAudioRef.current.volume = 0.75;
+      }
+      chainRattleAudioRef.current.currentTime = 0;
+      chainRattleAudioRef.current.play().catch(() => {});
+    } catch (e) {
+      // Ignore audio restriction
+    }
+  };
 
   const fadeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null
@@ -459,6 +501,8 @@ export function AudioProvider({
         toggleMute,
         activeTab,
         setActiveTab,
+        playBeep,
+        playChainRattle,
       }}
     >
       {children}

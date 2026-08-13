@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useAudio } from "./AudioContext";
 
 interface FrameConfig {
   id: number;
@@ -47,6 +48,7 @@ const FRAMES: FrameConfig[] = [
 ];
 
 function SingleHangingFrame({ config }: { config: FrameConfig }) {
+  const { playBeep, playChainRattle } = useAudio();
   const frameRef = useRef<HTMLDivElement>(null);
   const isHoveringRef = useRef<boolean>(false);
   const lastMouseXRef = useRef<number | null>(null);
@@ -96,9 +98,15 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isHoveringRef.current) {
+      playChainRattle();
+    }
     isHoveringRef.current = true;
     if (lastMouseXRef.current !== null) {
       const deltaX = e.clientX - lastMouseXRef.current;
+      if (Math.abs(deltaX) > 1.5) {
+        playChainRattle();
+      }
       const push = Math.max(-3.5, Math.min(3.5, deltaX * 0.22));
       targetAngleRef.current = push;
     }
@@ -246,6 +254,7 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
       {/* Frame image container */}
       <div
         ref={frameRef}
+        onClick={playBeep}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         className="relative w-full cursor-pointer transition-transform duration-75 ease-out"

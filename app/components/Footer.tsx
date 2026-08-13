@@ -222,7 +222,7 @@ export default function Footer() {
 
             <div className="flex items-center gap-2 text-[#8f96b3] pl-1">
               <a
-                href="https://github.com"
+                href="https://github.com/ArjiJethin/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-0.5 hover:text-white transition-colors group"
@@ -234,7 +234,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/arjijethin/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-0.5 hover:text-white transition-colors group"
@@ -246,9 +246,10 @@ export default function Footer() {
               </a>
 
               <a
-                href="mailto:contact@example.com"
+                href="https://mail.google.com/mail/u/0/?fs=1&to=arjijethin.ac0705@gmail.com&su=Interview+Opportunity+-+Arji+Jethin&body=Hello+Arji,%0A%0AI+reviewed+your+profile+and+would+like+to+discuss+a+potential+opportunity.+Please+let+me+know+a+convenient+time+to+connect.%0A%0AName:+%0ACompany:+%0APosition:+%0AEmail:+%0APhone:+%0A%0AKind+regards,&tf=cm"
                 className="p-0.5 hover:text-white transition-colors group"
                 aria-label="Email"
+                target="blank"
               >
                 <svg className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
