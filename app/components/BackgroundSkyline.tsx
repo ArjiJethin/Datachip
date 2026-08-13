@@ -21,9 +21,9 @@ export default function BackgroundSkyline() {
       const normX = e.clientX / windowWidth - 0.5;
       const normY = e.clientY / windowHeight - 0.5;
 
-      // Subtle parallax range: X +/- 15px, Y +/- 10px (opposing direction for depth)
-      targetXRef.current = normX * -30;
-      targetYRef.current = normY * -20;
+      // Increased parallax range (+20% sensitivity): X +/- 18px, Y +/- 12px
+      targetXRef.current = normX * -36;
+      targetYRef.current = normY * -24;
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -35,7 +35,7 @@ export default function BackgroundSkyline() {
       currentYRef.current += (targetYRef.current - currentYRef.current) * 0.05;
 
       if (containerRef.current) {
-        containerRef.current.style.transform = `scale(1.07) translate3d(${currentXRef.current}px, ${currentYRef.current}px, 0px)`;
+        containerRef.current.style.transform = `scale(1.09) translate3d(${currentXRef.current}px, ${currentYRef.current}px, 0px)`;
       }
 
       animId = requestAnimationFrame(animate);

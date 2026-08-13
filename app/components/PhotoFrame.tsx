@@ -28,7 +28,7 @@ const FRAMES: FrameConfig[] = [
     id: 2,
     src: "/assets/FotoFrame2.png",
     alt: "02 Journey Log Photo Frame",
-    left: "22.5%",
+    left: "22%",
     top: "28.7%",
     chainHeightPct: 4.4,
     leftHookPct: 18.5,
@@ -38,7 +38,7 @@ const FRAMES: FrameConfig[] = [
     id: 3,
     src: "/assets/FotoFrame3.png",
     alt: "03 Side Quests Photo Frame",
-    left: "5.5%",
+    left: "4%",
     top: "45.7%",
     chainHeightPct: 4.4,
     leftHookPct: 18.5,
@@ -117,7 +117,7 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
 
     const topX = chainWidth / 2;
     const topY = 0;
-    
+
     // Bottom hook point moves with frame sway
     const botX = chainWidth / 2 + motion.angle * 0.9;
     const botY = chainHeight;
@@ -231,7 +231,7 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
       style={{
         left: config.left,
         top: config.top,
-        width: "clamp(135px, 11.8vw, 220px)",
+        width: "clamp(155px, 13.6vw, 253px)",
       }}
     >
       {/* Chains container scaling dynamically with viewport height */}

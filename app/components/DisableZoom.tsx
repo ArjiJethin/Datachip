@@ -40,50 +40,12 @@ export default function DisableZoom() {
       if (e.touches.length > 1) e.preventDefault();
     };
 
-    // 4. Counteract Browser Menu Zoom (e.g. Chrome / Edge / Firefox Menu 125%, 150%, 80%)
-    const initialDPR = window.devicePixelRatio || 1;
-
-    const enforceScale = () => {
-      const currentDPR = window.devicePixelRatio || 1;
-      const scaleRatio = initialDPR / currentDPR;
-
-      const mainEl = (document.querySelector("main") || document.body) as HTMLElement;
-
-      if (Math.abs(scaleRatio - 1) > 0.01) {
-        // Apply inverse zoom / transform to lock view scale to 100%
-        if ("zoom" in document.body.style) {
-          (document.body.style as unknown as Record<string, string>).zoom = `${scaleRatio * 100}%`;
-        } else if (mainEl) {
-          mainEl.style.transform = `scale(${scaleRatio})`;
-          mainEl.style.transformOrigin = "top left";
-          mainEl.style.width = `${100 / scaleRatio}vw`;
-          mainEl.style.height = `${100 / scaleRatio}vh`;
-        }
-      } else {
-        if ("zoom" in document.body.style) {
-          (document.body.style as unknown as Record<string, string>).zoom = "100%";
-        }
-        if (mainEl) {
-          mainEl.style.transform = "none";
-          mainEl.style.width = "100vw";
-          mainEl.style.height = "100vh";
-        }
-      }
-    };
-
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("gesturestart", handleGesture);
     window.addEventListener("gesturechange", handleGesture);
     window.addEventListener("gestureend", handleGesture);
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("resize", enforceScale);
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", enforceScale);
-    }
-
-    enforceScale();
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
@@ -92,12 +54,9 @@ export default function DisableZoom() {
       window.removeEventListener("gesturechange", handleGesture);
       window.removeEventListener("gestureend", handleGesture);
       window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("resize", enforceScale);
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", enforceScale);
-      }
     };
   }, []);
 
   return null;
 }
+
