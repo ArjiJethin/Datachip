@@ -60,3 +60,14 @@ body {
 .animate-cloud-fast {
   animation: cloudDrift 35s linear infinite;
 }
+
+/* Responsive 1536x695 scene container */
+.scene-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: max(100vw, calc(100vh * (1536 / 695)));
+  height: max(100vh, calc(100vw * (695 / 1536)));
+}
+

@@ -9,7 +9,7 @@ export default function JWST() {
       style={{
         left: "9%",
         top: "31.8%",
-        height: "clamp(85px, 12.5vh, 130px)",
+        height: "12.5%",
       }}
     >
       <img

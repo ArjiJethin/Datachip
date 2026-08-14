@@ -9,7 +9,7 @@ interface FrameConfig {
   alt: string;
   left: string;
   top: string;
-  chainHeightPct: number; // percentage of viewport height or scalable base
+  chainHeightPct: number;
   leftHookPct: number;
   rightHookPct: number;
 }
@@ -47,110 +47,309 @@ const FRAMES: FrameConfig[] = [
   },
 ];
 
-function SingleHangingFrame({ config }: { config: FrameConfig }) {
+// Track global pointer velocity across the window so whenever a photo frame
+// is entered, we know the exact velocity vector of the cursor as it moves across it.
+const globalPointer = {
+  x: 0,
+  y: 0,
+  time: 0,
+  vx: 0,
+};
+
+if (typeof window !== "undefined") {
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      const now = performance.now();
+      if (globalPointer.time > 0) {
+        const dt = Math.max(8, now - globalPointer.time);
+        const dx = e.clientX - globalPointer.x;
+        const instantVx = (dx / dt) * 1000;
+        globalPointer.vx = globalPointer.vx * 0.3 + instantVx * 0.7;
+      }
+      globalPointer.x = e.clientX;
+      globalPointer.y = e.clientY;
+      globalPointer.time = now;
+    },
+    { passive: true }
+  );
+}
+
+function SingleHangingFrame({
+  config,
+}: {
+  config: FrameConfig;
+}) {
   const { playBeep, playChainRattle } = useAudio();
+
   const frameRef = useRef<HTMLDivElement>(null);
-  const isHoveringRef = useRef<boolean>(false);
-  const lastMouseXRef = useRef<number | null>(null);
-  const hasRattledForCurrentSwipeRef = useRef<boolean>(false);
 
-  // Physics refs for independent frame swaying
-  const angleRef = useRef<number>(0);
-  const targetAngleRef = useRef<number>(0);
-  const velocityRef = useRef<number>(0);
-  const flexRef = useRef<number>(0);
+  // ------------------------------------------------------------
+  // PHYSICS
+  // ------------------------------------------------------------
 
-  const [motion, setMotion] = useState({ angle: 0, flex: 0 });
+  const angleRef = useRef(0);
+  const velocityRef = useRef(0);
+  const flexRef = useRef(0);
+
+  // ------------------------------------------------------------
+  // POINTER TRACKING
+  // ------------------------------------------------------------
+
+  const lastRattleTimeRef = useRef(0);
+
+  const [motion, setMotion] = useState({
+    angle: 0,
+    flex: 0,
+  });
+
+  // ------------------------------------------------------------
+  // RESPONSIVE CHAIN DIMENSIONS
+  //
+  // Reference scene: 1536 x 695
+  // Frame width: 13.6% = 208.896px
+  // ------------------------------------------------------------
+
+  const chainAspectRatio =
+    208.896 /
+    (695 * (config.chainHeightPct / 100));
+
+  // ------------------------------------------------------------
+  // SPRING / AMBIENT ANIMATION
+  // ------------------------------------------------------------
 
   useEffect(() => {
     let animId: number;
 
     const animate = () => {
-      const stiffness = 0.05;
-      const damping = 0.84;
+      const timeSec = performance.now() / 1000;
 
-      // Spring physics towards target angle
-      const displacement = targetAngleRef.current - angleRef.current;
-      const force = displacement * stiffness;
+      // ----------------------------------------------------------
+      // Ambient idle sway
+      //
+      // Each frame gets a different phase so they don't move
+      // together.
+      // ----------------------------------------------------------
 
-      velocityRef.current = (velocityRef.current + force) * damping;
-      angleRef.current += velocityRef.current;
+      const phase = config.id * 2.37;
 
-      // Dynamic counter-directional chain curvature flex (-flex)
-      const targetFlex = -velocityRef.current * 4.8 - angleRef.current * 1.1;
-      flexRef.current += (targetFlex - flexRef.current) * 0.2;
+      const idleAngle =
+        Math.sin(timeSec * 1.2 + phase) * 0.45 +
+        Math.cos(timeSec * 0.7 + phase * 1.5) * 0.25;
 
-      // Decay target angle when cursor leaves or stops moving
-      if (!isHoveringRef.current) {
-        targetAngleRef.current += (0 - targetAngleRef.current) * 0.08;
-      }
+      // ----------------------------------------------------------
+      // Spring physics
+      // ----------------------------------------------------------
+
+      const stiffness = 0.045;
+      const damping = 0.86;
+
+      const displacement =
+        idleAngle - angleRef.current;
+
+      velocityRef.current +=
+        displacement * stiffness;
+
+      velocityRef.current *= damping;
+
+      angleRef.current +=
+        velocityRef.current;
+
+      // ----------------------------------------------------------
+      // HARD ANGLE LIMIT
+      //
+      // Even if something produces a huge impulse, the frame
+      // can never rotate beyond +/- 3 degrees.
+      // ----------------------------------------------------------
+
+      angleRef.current = Math.max(
+        -3,
+        Math.min(
+          3,
+          angleRef.current
+        )
+      );
+
+      // ----------------------------------------------------------
+      // SOFT CHAIN FLEX
+      //
+      // The chain should react to movement, but not bend wildly.
+      // ----------------------------------------------------------
+
+      const targetFlex =
+        -velocityRef.current * 2.2 -
+        angleRef.current * 0.45;
+
+      flexRef.current +=
+        (targetFlex - flexRef.current) * 0.12;
 
       setMotion({
         angle: angleRef.current,
         flex: flexRef.current,
       });
 
-      animId = requestAnimationFrame(animate);
+      animId =
+        requestAnimationFrame(animate);
     };
 
-    animId = requestAnimationFrame(animate);
+    animId =
+      requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(animId);
-  }, []);
+    return () => {
+      cancelAnimationFrame(animId);
+    };
+  }, [config.id]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (lastMouseXRef.current !== null) {
-      const deltaX = e.clientX - lastMouseXRef.current;
+  // ------------------------------------------------------------
+  // POINTER ENTER
+  //
+  // Triggers sway physics impulse and chain rattle sound ONLY
+  // when cursor moves ACROSS into the photo frame.
+  // Movement inside / over the frame produces no force or sound.
+  // ------------------------------------------------------------
 
-      // Play chain rattle ONCE when cursor is moved across the frame significantly
-      if (!hasRattledForCurrentSwipeRef.current && Math.abs(deltaX) > 3.0) {
-        hasRattledForCurrentSwipeRef.current = true;
-        playChainRattle();
-      }
+  const handlePointerEnter = (
+    e: React.PointerEvent<HTMLDivElement>
+  ) => {
+    const now = performance.now();
+    let vx = globalPointer.vx;
 
-      const push = Math.max(-3.5, Math.min(3.5, deltaX * 0.22));
-      targetAngleRef.current = push;
+    // Fallback if cursor entered vertically or at low horizontal velocity
+    if (Math.abs(vx) < 30 && frameRef.current) {
+      const rect = frameRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      vx = e.clientX < centerX ? 180 : -180;
     }
 
-    isHoveringRef.current = true;
-    lastMouseXRef.current = e.clientX;
+    // Physical impulse based on cursor velocity across the frame
+    const impulse = Math.max(
+      -1.1,
+      Math.min(
+        1.1,
+        vx * 0.0035
+      )
+    );
+
+    velocityRef.current += impulse;
+
+    // Hard velocity limit
+    velocityRef.current = Math.max(
+      -2.2,
+      Math.min(
+        2.2,
+        velocityRef.current
+      )
+    );
+
+    // Play chain rattle sound when cursor moves across into frame
+    if (now - lastRattleTimeRef.current > 180) {
+      lastRattleTimeRef.current = now;
+      playChainRattle();
+    }
   };
 
-  const handleMouseLeave = () => {
-    isHoveringRef.current = false;
-    lastMouseXRef.current = null;
-    targetAngleRef.current = 0;
-    hasRattledForCurrentSwipeRef.current = false;
-  };
+  // ------------------------------------------------------------
+  // CHAIN RENDERER
+  // ------------------------------------------------------------
 
-  const renderChain = (hookPct: number) => {
+  const renderChain = (
+    hookPct: number
+  ) => {
     const chainHeight = 46;
     const chainWidth = 16;
 
-    const topX = chainWidth / 2;
+    const topX =
+      chainWidth / 2;
+
     const topY = 0;
 
-    // Bottom hook point moves with frame sway
-    const botX = chainWidth / 2 + motion.angle * 0.9;
-    const botY = chainHeight;
+    // Bottom hook follows the frame.
+    const botX =
+      chainWidth / 2 +
+      motion.angle * 0.9;
 
-    // Mid control point flexes IN OPPOSITE DIRECTION (-flex)
-    const midX = (topX + botX) / 2 - motion.flex;
-    const midY = chainHeight * 0.5;
+    const botY =
+      chainHeight;
+
+    // ----------------------------------------------------------
+    // Subtle counter-directional chain bend.
+    // ----------------------------------------------------------
+
+    const midX =
+      (topX + botX) / 2 -
+      motion.flex;
+
+    const midY =
+      chainHeight * 0.5;
 
     const numLinks = 5;
+
     const links = [];
 
-    for (let i = 0; i <= numLinks; i++) {
-      const t = i / numLinks;
-      const x = (1 - t) * (1 - t) * topX + 2 * (1 - t) * t * midX + t * t * botX;
-      const y = (1 - t) * (1 - t) * topY + 2 * (1 - t) * t * midY + t * t * botY;
+    for (
+      let i = 0;
+      i <= numLinks;
+      i++
+    ) {
+      const t =
+        i / numLinks;
 
-      const dx = 2 * (1 - t) * (midX - topX) + 2 * t * (botX - midX);
-      const dy = 2 * (1 - t) * (midY - topY) + 2 * t * (botY - midY);
-      const angleDeg = (Math.atan2(dy, dx) * 180) / Math.PI - 90;
+      const x =
+        (1 - t) *
+        (1 - t) *
+        topX +
+        2 *
+        (1 - t) *
+        t *
+        midX +
+        t *
+        t *
+        botX;
 
-      links.push({ x, y, angle: angleDeg, isFront: i % 2 === 0 });
+      const y =
+        (1 - t) *
+        (1 - t) *
+        topY +
+        2 *
+        (1 - t) *
+        t *
+        midY +
+        t *
+        t *
+        botY;
+
+      const dx =
+        2 *
+        (1 - t) *
+        (midX - topX) +
+        2 *
+        t *
+        (botX - midX);
+
+      const dy =
+        2 *
+        (1 - t) *
+        (midY - topY) +
+        2 *
+        t *
+        (botY - midY);
+
+      const angleDeg =
+        (Math.atan2(
+          dy,
+          dx
+        ) *
+          180) /
+        Math.PI -
+        90;
+
+      links.push({
+        x,
+        y,
+        angle: angleDeg,
+        isFront:
+          i % 2 === 0,
+      });
     }
 
     return (
@@ -158,8 +357,9 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
         className="absolute top-0 pointer-events-none"
         style={{
           left: `${hookPct}%`,
-          transform: "translateX(-50%)",
-          width: "clamp(12px, 1.1vw, 18px)",
+          transform:
+            "translateX(-50%)",
+          width: "8.09%",
           height: "100%",
         }}
       >
@@ -168,6 +368,7 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
           viewBox={`0 0 ${chainWidth} ${chainHeight}`}
           preserveAspectRatio="none"
         >
+          {/* Subtle chain curve */}
           <path
             d={`M ${topX} ${topY} Q ${midX} ${midY} ${botX} ${botY}`}
             fill="none"
@@ -176,100 +377,140 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
             opacity="0.3"
           />
 
-          {links.map((link, idx) => (
-            <g
-              key={idx}
-              transform={`translate(${link.x}, ${link.y}) rotate(${link.angle})`}
-            >
-              {link.isFront ? (
-                <g stroke="#1a120b" strokeWidth="1.8" strokeLinejoin="round">
-                  <rect
-                    x="-4"
-                    y="-5.5"
-                    width="8"
-                    height="11"
-                    rx="3"
-                    fill="#c28b38"
-                  />
-                  <rect
-                    x="-2"
-                    y="-3.5"
-                    width="4"
-                    height="7"
-                    rx="2"
-                    fill="#1a120b"
-                  />
-                  <rect
-                    x="-3"
-                    y="-4"
-                    width="1.5"
-                    height="8"
-                    rx="0.75"
-                    fill="#fef08a"
-                    opacity="0.7"
-                  />
-                </g>
-              ) : (
-                <g stroke="#1a120b" strokeWidth="1.8" strokeLinejoin="round">
-                  <rect
-                    x="-2.5"
-                    y="-6.5"
-                    width="5"
-                    height="13"
-                    rx="2.5"
-                    fill="#8c5e23"
-                  />
-                  <rect
-                    x="-1.5"
-                    y="-5"
-                    width="1"
-                    height="10"
-                    rx="0.5"
-                    fill="#fef08a"
-                    opacity="0.5"
-                  />
-                </g>
-              )}
-            </g>
-          ))}
+          {links.map(
+            (link, idx) => (
+              <g
+                key={idx}
+                transform={`translate(${link.x}, ${link.y}) rotate(${link.angle})`}
+              >
+                {link.isFront ? (
+                  <g
+                    stroke="#1a120b"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  >
+                    <rect
+                      x="-4"
+                      y="-5.5"
+                      width="8"
+                      height="11"
+                      rx="3"
+                      fill="#c28b38"
+                    />
+
+                    <rect
+                      x="-2"
+                      y="-3.5"
+                      width="4"
+                      height="7"
+                      rx="2"
+                      fill="#1a120b"
+                    />
+
+                    <rect
+                      x="-3"
+                      y="-4"
+                      width="1.5"
+                      height="8"
+                      rx="0.75"
+                      fill="#fef08a"
+                      opacity="0.7"
+                    />
+                  </g>
+                ) : (
+                  <g
+                    stroke="#1a120b"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  >
+                    <rect
+                      x="-2.5"
+                      y="-6.5"
+                      width="5"
+                      height="13"
+                      rx="2.5"
+                      fill="#8c5e23"
+                    />
+
+                    <rect
+                      x="-1.5"
+                      y="-5"
+                      width="1"
+                      height="10"
+                      rx="0.5"
+                      fill="#fef08a"
+                      opacity="0.5"
+                    />
+                  </g>
+                )}
+              </g>
+            )
+          )}
         </svg>
       </div>
     );
   };
 
+  // ------------------------------------------------------------
+  // COMPONENT
+  // ------------------------------------------------------------
+
   return (
     <div
-      className="absolute z-20 select-none flex flex-col items-center"
+      className="absolute z-20 select-none flex flex-col items-center pointer-events-auto"
       style={{
         left: config.left,
         top: config.top,
-        width: "clamp(155px, 13.6vw, 253px)",
+        width: "13.6%",
       }}
+      onPointerEnter={
+        handlePointerEnter
+      }
     >
-      {/* Chains container scaling dynamically with viewport height */}
+      {/* ------------------------------------------------------
+          CHAINS
+          ------------------------------------------------------ */}
+
       <div
         className="w-full relative"
-        style={{ height: `clamp(30px, ${config.chainHeightPct}vh, 52px)` }}
+        style={{
+          aspectRatio:
+            `${chainAspectRatio}`,
+        }}
       >
-        {renderChain(config.leftHookPct)}
-        {renderChain(config.rightHookPct)}
+        {renderChain(
+          config.leftHookPct
+        )}
+
+        {renderChain(
+          config.rightHookPct
+        )}
       </div>
 
-      {/* Frame image container */}
+      {/* ------------------------------------------------------
+          FRAME
+          ------------------------------------------------------ */}
+
       <div
         ref={frameRef}
         onClick={playBeep}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className="relative w-full cursor-pointer transition-transform duration-75 ease-out"
+        className="relative w-full cursor-pointer select-none"
         style={{
-          transform: `rotate(${motion.angle}deg)`,
-          transformOrigin: "50% -40px",
+          transform:
+            `rotate(${motion.angle}deg)`,
+
+          // Pivot at the hanging hooks.
+          transformOrigin:
+            "50% -100%",
+
+          // Helps browser optimize the animated transform.
+          willChange: "transform",
         }}
       >
         <img
           src={config.src}
           alt={config.alt}
+          draggable={false}
           className="w-full h-auto block pixelated drop-shadow-[0_8px_12px_rgba(0,0,0,0.65)] hover:brightness-105 transition-all"
         />
       </div>
@@ -280,9 +521,14 @@ function SingleHangingFrame({ config }: { config: FrameConfig }) {
 export default function PhotoFrame() {
   return (
     <>
-      {FRAMES.map((config) => (
-        <SingleHangingFrame key={config.id} config={config} />
-      ))}
+      {FRAMES.map(
+        (config) => (
+          <SingleHangingFrame
+            key={config.id}
+            config={config}
+          />
+        )
+      )}
     </>
   );
 }

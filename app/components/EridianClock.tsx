@@ -9,7 +9,7 @@ export default function EridianClock() {
       style={{
         left: "27.5%",
         top: "66.5%",
-        height: "clamp(65px, 9.4vh, 98px)",
+        height: "9.4%",
       }}
     >
       <img

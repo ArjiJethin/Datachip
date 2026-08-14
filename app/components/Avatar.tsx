@@ -21,8 +21,8 @@ export default function Avatar() {
       className="absolute z-12 select-none flex items-end justify-start"
       style={{
         left: "28.5%",
-        bottom: "clamp(6.5%, 9.8vh, 11%)",
-        width: "clamp(270px, 27.8vw, 490px)",
+        bottom: "9.8%",
+        width: "27.8%",
       }}
     >
       <div className="relative w-full h-auto pointer-events-auto">

@@ -8,6 +8,7 @@ import Avatar from "./components/Avatar";
 import EridianClock from "./components/EridianClock";
 import JWST from "./components/JWST";
 import { AudioProvider } from "./components/AudioContext";
+import ViewportSize from "./components/ViewportSize";
 
 export default function Home() {
   return (
@@ -22,31 +23,34 @@ export default function Home() {
         {/* Layer 1.5: Weather Effect Layer (Rain + Slow-Moving Clouds) */}
         <RainAndClouds />
 
-        {/* Layer 1: Foreground Ultra-Wide Room Environment */}
-        <div className="absolute inset-0 z-10 w-full h-full">
-          <Image
-            src="/assets/Layer1.webp?v=2"
-            alt="Foreground wide room environment"
-            fill
-            priority
-            unoptimized
-            quality={100}
-            sizes="100vw"
-            className="object-cover object-center pointer-events-none pixelated"
-          />
+        {/* Layer 1: Foreground Responsive Scene Container (1536x695 Coordinate System) */}
+        <div className="scene-container z-10 pointer-events-none">
+          {/* Foreground Ultra-Wide Room Image */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            <Image
+              src="/assets/Layer1.webp?v=2"
+              alt="Foreground wide room environment"
+              fill
+              priority
+              unoptimized
+              quality={100}
+              sizes="100vw"
+              className="object-cover object-center pointer-events-none pixelated"
+            />
+          </div>
+
+          {/* Eridian Clock Standing on Bookshelf Shelf */}
+          <EridianClock />
+
+          {/* James Webb Space Telescope Model on Upper Bookshelf Shelf */}
+          <JWST />
+
+          {/* Avatar Sitting at Desk */}
+          <Avatar />
+
+          {/* Interactive Hanging Photo Frames */}
+          <PhotoFrame />
         </div>
-
-        {/* Eridian Clock Standing on Bookshelf Shelf */}
-        <EridianClock />
-
-        {/* James Webb Space Telescope Model on Upper Bookshelf Shelf */}
-        <JWST />
-
-        {/* Avatar Sitting at Desk */}
-        <Avatar />
-
-        {/* Interactive Hanging Photo Frames */}
-        <PhotoFrame />
 
         {/* Pixel Art Footer Bar */}
         <Footer />
