@@ -5,7 +5,8 @@ import React from "react";
 export default function EridianClock() {
   return (
     <div
-      className="absolute z-11 pointer-events-none select-none flex items-end justify-center"
+      data-cursor="eridian-clock"
+      className="absolute z-11 pointer-events-auto cursor-pointer select-none flex items-end justify-center"
       style={{
         left: "27.5%",
         top: "66.5%",

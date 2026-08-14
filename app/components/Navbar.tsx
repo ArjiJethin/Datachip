@@ -31,6 +31,7 @@ export default function Navbar() {
             return (
               <div key={item.name} className="relative flex flex-col items-center justify-center">
                 <button
+                  data-cursor="navigation"
                   onClick={() => {
                     playBeep();
                     setActiveTab(item.name);
@@ -62,6 +63,7 @@ export default function Navbar() {
           {/* Bottom Right LinkedIn Icon */}
           <div className="absolute right-[3%] bottom-[12%] pointer-events-auto">
             <a
+              data-cursor="social"
               href="https://linkedin.com/in/arjijethin/"
               target="_blank"
               rel="noopener noreferrer"
@@ -78,6 +80,7 @@ export default function Navbar() {
 
       {/* Settings Cogwheel Icon with Transparent Center Hole */}
       <button
+        data-cursor="button"
         aria-label="Settings"
         className="group cursor-pointer shrink-0 p-1"
       >

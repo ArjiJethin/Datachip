@@ -5,7 +5,8 @@ import React from "react";
 export default function JWST() {
   return (
     <div
-      className="absolute z-11 pointer-events-none select-none flex items-end justify-center"
+      data-cursor="jwst"
+      className="absolute z-11 pointer-events-auto cursor-pointer select-none flex items-end justify-center"
       style={{
         left: "9%",
         top: "31.8%",

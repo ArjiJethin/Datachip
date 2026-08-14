@@ -457,6 +457,7 @@ function SingleHangingFrame({
 
   return (
     <div
+      data-cursor="photo-frame"
       className="absolute z-20 select-none flex flex-col items-center pointer-events-auto"
       style={{
         left: config.left,
