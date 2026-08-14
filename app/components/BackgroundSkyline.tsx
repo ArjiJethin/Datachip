@@ -35,7 +35,8 @@ export default function BackgroundSkyline() {
       currentYRef.current += (targetYRef.current - currentYRef.current) * 0.05;
 
       if (containerRef.current) {
-        containerRef.current.style.transform = `scale(1.09) translate3d(${currentXRef.current}px, ${currentYRef.current}px, 0px)`;
+        containerRef.current.style.transform =
+          `scale(1.02) translate3d(${currentXRef.current}px, ${currentYRef.current}px, 0px)`;
       }
 
       animId = requestAnimationFrame(animate);
