@@ -17,9 +17,9 @@ interface FrameConfig {
 const FRAMES: FrameConfig[] = [
   {
     id: 1,
-    src: "/assets/FotoFrame1.png",
+    src: "/assets/home/FotoFrame1.png",
     alt: "01 Skill Tree Photo Frame",
-    left: "5.5%",
+    left: "14%",
     top: "0px",
     chainHeightPct: 4.8,
     leftHookPct: 17.0,
@@ -27,9 +27,9 @@ const FRAMES: FrameConfig[] = [
   },
   {
     id: 2,
-    src: "/assets/FotoFrame2.png",
+    src: "/assets/home/FotoFrame2.png",
     alt: "02 Journey Log Photo Frame",
-    left: "22%",
+    left: "23.5%",
     top: "28.7%",
     chainHeightPct: 4.4,
     leftHookPct: 18.5,
@@ -37,11 +37,11 @@ const FRAMES: FrameConfig[] = [
   },
   {
     id: 3,
-    src: "/assets/FotoFrame3.png",
+    src: "/assets/home/FotoFrame3.png",
     alt: "03 Side Quests Photo Frame",
-    left: "4%",
+    left: "10%",
     top: "45.7%",
-    chainHeightPct: 4.4,
+    chainHeightPct: 6.4,
     leftHookPct: 18.5,
     rightHookPct: 81.5,
   },
@@ -107,11 +107,11 @@ function SingleHangingFrame({
   // RESPONSIVE CHAIN DIMENSIONS
   //
   // Reference scene: 1536 x 695
-  // Frame width: 13.6% = 208.896px
+  // Frame width: 10.88% = 167.1168px (scaled down 20%)
   // ------------------------------------------------------------
 
   const chainAspectRatio =
-    208.896 /
+    167.1168 /
     (695 * (config.chainHeightPct / 100));
 
   // ------------------------------------------------------------
@@ -462,7 +462,7 @@ function SingleHangingFrame({
       style={{
         left: config.left,
         top: config.top,
-        width: "13.6%",
+        width: "10.88%",
       }}
       onPointerEnter={
         handlePointerEnter

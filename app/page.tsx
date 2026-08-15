@@ -28,7 +28,7 @@ export default function Home() {
           {/* Foreground Ultra-Wide Room Image */}
           <div className="absolute inset-0 w-full h-full pointer-events-none">
             <Image
-              src="/assets/Layer1.webp?v=2"
+              src="/assets/home/Layer1.webp?v=2"
               alt="Foreground wide room environment"
               fill
               priority

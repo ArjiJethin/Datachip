@@ -56,7 +56,7 @@ export default function BackgroundSkyline() {
       className="absolute inset-0 z-0 w-full h-full transition-transform duration-75 ease-out"
     >
       <Image
-        src="/assets/Layer2.webp?v=2"
+        src="/assets/home/Layer2.webp?v=2"
         alt="City night skyline background"
         fill
         priority

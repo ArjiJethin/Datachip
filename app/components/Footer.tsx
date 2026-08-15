@@ -128,7 +128,7 @@ export default function Footer() {
               >
                 <div className="relative w-[clamp(115px,9.5vw,155px)] h-[clamp(72px,6vw,96px)]">
                   <Image
-                    src="/assets/CasetteStatic.png"
+                    src="/assets/home/CasetteStatic.png"
                     alt="Cassette Tape"
                     fill
                     sizes="170px"
@@ -192,7 +192,7 @@ export default function Footer() {
             <div className="relative shrink-0 -mt-10 md:-mt-14 rotate-[5deg]">
               <div className="relative w-[clamp(110px,9vw,150px)] h-[clamp(68px,5.6vw,94px)] transition-transform hover:scale-105">
                 <Image
-                  src="/assets/MapStatic.png"
+                  src="/assets/home/MapStatic.png"
                   alt="World Map"
                   fill
                   sizes="160px"

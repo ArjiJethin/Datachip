@@ -19,7 +19,7 @@ export default function Navbar() {
       <div className="relative w-[clamp(280px,26vw,420px)] shrink-0">
         {/* Pixel Art Frame Graphic */}
         <img
-          src="/assets/StatBoard.png"
+          src="/assets/home/StatBoard.png"
           alt="Navigation Panel"
           className="w-full h-auto pixelated block drop-shadow-xl pointer-events-none"
         />
@@ -36,7 +36,7 @@ export default function Navbar() {
                     playBeep();
                     setActiveTab(item.name);
                   }}
-                  className={`font-['Silkscreen',monospace] text-[10px] md:text-[12px] tracking-wider uppercase transition-colors cursor-pointer ${isActive ? "text-[#f59e0b] font-bold" : "text-[#8f96b3] hover:text-white"
+                  className={`font-silkscreen font-['Silkscreen',monospace] text-[10px] md:text-[12px] tracking-wider uppercase transition-colors cursor-pointer ${isActive ? "text-[#f59e0b] font-bold" : "text-[#8f96b3] hover:text-white"
                     }`}
                 >
                   {item.name}

@@ -1,4 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Pixelify+Sans:wght@400..700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-silkscreen: "Silkscreen", var(--font-silkscreen), cursive, monospace;
+  --font-pixelify: "Pixelify Sans", var(--font-pixelify), cursive, monospace;
+}
+
+.font-silkscreen,
+[class*="Silkscreen"] {
+  font-family: "Silkscreen", var(--font-silkscreen), cursive, monospace !important;
+}
+
+.font-pixelify,
+[class*="Pixelify"] {
+  font-family: "Pixelify Sans", var(--font-pixelify), cursive, monospace !important;
+}
 
 :root {
   --background: #0b0c10;

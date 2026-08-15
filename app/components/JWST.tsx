@@ -14,7 +14,7 @@ export default function JWST() {
       }}
     >
       <img
-        src="/assets/JWST.png"
+        src="/assets/home/JWST.png"
         alt="James Webb Space Telescope Model"
         className="h-full w-auto block pixelated drop-shadow-[0_6px_12px_rgba(0,0,0,0.75)]"
       />

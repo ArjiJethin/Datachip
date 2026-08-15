@@ -14,7 +14,7 @@ export default function EridianClock() {
       }}
     >
       <img
-        src="/assets/EridianClock.png"
+        src="/assets/home/EridianClock.png"
         alt="Eridian Clock"
         className="h-full w-auto block pixelated drop-shadow-[0_6px_12px_rgba(0,0,0,0.75)]"
       />

@@ -29,7 +29,7 @@ export default function Avatar() {
         {/* Avatar Base / Hover Image */}
         {/* Swaps to AvatarHover.png when user hovers over the avatar body (not laptop or phone) */}
         <img
-          src={hoveredTarget === "ABOUT" ? "/assets/AvatarHover.png" : "/assets/Avatar.png"}
+          src={hoveredTarget === "ABOUT" ? "/assets/home/AvatarHover.png" : "/assets/home/Avatar.png"}
           alt="Arji Jethin Pixel Avatar"
           className={`w-full h-auto block pixelated transition-all duration-300 ${hoveredTarget === "ABOUT"
             ? "drop-shadow-[0_0_8px_rgba(251,191,36,0.35)]"
