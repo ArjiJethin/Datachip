@@ -3,7 +3,15 @@
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 
-export default function BackgroundSkyline() {
+interface BackgroundSkylineProps {
+  src?: string;
+  alt?: string;
+}
+
+export default function BackgroundSkyline({
+  src = "/assets/home/Layer2.webp?v=2",
+  alt = "City night skyline background",
+}: BackgroundSkylineProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parallax target & current values for smooth spring/lerp interpolation
@@ -56,8 +64,8 @@ export default function BackgroundSkyline() {
       className="absolute inset-0 z-0 w-full h-full transition-transform duration-75 ease-out"
     >
       <Image
-        src="/assets/home/Layer2.webp?v=2"
-        alt="City night skyline background"
+        src={src}
+        alt={alt}
         fill
         priority
         unoptimized

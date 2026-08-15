@@ -46,6 +46,19 @@ export function AudioProvider({
   const [isMuted, setIsMuted] = useState(false);
   const [activeTab, setActiveTab] = useState("HOME");
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.toUpperCase().replace("#", "");
+      if (hash === "PROJECTS" || hash === "ABOUT" || hash === "CONTACT" || hash === "HOME") {
+        setActiveTab(hash);
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
   const thunderAudioRef = useRef<HTMLAudioElement | null>(null);
   const cassetteAudioRef = useRef<HTMLAudioElement | null>(null);
   const beepAudioRef = useRef<HTMLAudioElement | null>(null);
